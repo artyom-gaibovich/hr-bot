@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"hr-bot/internal/config"
+	"hr-bot/internal/constant"
 	"os"
 	"os/signal"
 
@@ -19,19 +21,21 @@ func main() {
 	opts := []bot.Option{
 		bot.WithDefaultHandler(defaultHandler),
 	}
+
 	b, err := bot.New(cfg.Token, opts...)
 	if err != nil {
 		panic(err)
 	}
-	b.RegisterHandler(bot.HandlerTypeMessageText, "/hello", bot.MatchTypeExact, helloHandler)
+	b.RegisterHandler(bot.HandlerTypeMessageText, "/start", bot.MatchTypeExact, startHandler)
 
 	b.Start(ctx)
 }
 
-func helloHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+func startHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	fmt.Println(constant.StartText)
 	b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID:    update.Message.Chat.ID,
-		Text:      "Hello, *" + bot.EscapeMarkdown(update.Message.From.FirstName) + "*",
+		Text:      bot.EscapeMarkdown(constant.StartText),
 		ParseMode: models.ParseModeMarkdown,
 	})
 }
